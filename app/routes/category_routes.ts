@@ -7,9 +7,9 @@ import router from "@adonisjs/core/services/router"
 
 export const CategoryRoutes = () => {
     router.group(() => {
-        router.post('/', [CategoriesController, 'store']),
-        router.get('/', [CategoriesController, 'index']),
-        router.put('/:id', [CategoriesController, 'update']),
-        router.delete('/:id', [CategoriesController, 'delete'])
+        router.post('/', [CategoriesController, 'store']).use(middleware.checkPermission(['create-category']))
+        router.get('/', [CategoriesController, 'index']).use(middleware.checkPermission(['get-category'])),
+        router.put('/:id', [CategoriesController, 'update']).use(middleware.checkPermission(['update-category'])),
+        router.delete('/:id', [CategoriesController, 'delete']).use(middleware.checkPermission(['delete-category']))
     }).prefix('/categories').use(middleware.auth({guards: ['api']}))
 }

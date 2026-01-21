@@ -14,8 +14,8 @@ export const AuthRoutes = () => {
         router.post('/login', [AuthController, 'login']),
         router.post('/google', [GoogleAuthsController, 'loginWithGoogle']),
         router.delete('/logout', [AuthController, 'logout']).use(middleware.auth({ guards: ['api'] })),
-        router.post('/assign-role/:id', [AuthController, 'assignRoleToUser']),
-        router.post('/unassign-role/:id', [AuthController, 'unassignRoleToUser']),
+        router.post('/assign-role/:id', [AuthController, 'assignRoleToUser']).use([middleware.auth({ guards: ['api'] }), middleware.checkPermission(['assign-role-to-user'])]),
+        router.post('/unassign-role/:id', [AuthController, 'unassignRoleToUser']).use([middleware.auth({ guards: ['api'] }), middleware.checkPermission(['unassign-role-to-user'])]),
         router.post('/verify-user', [AuthController, 'verifyUser']),
         router.post('/verify-otp-code', [AuthController, 'verifyOtpCode']),
         router.post('/forgot-password', [AuthController, 'forgotPassword'])

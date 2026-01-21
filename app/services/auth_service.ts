@@ -47,8 +47,7 @@ export class AuthService {
   }
 
   async verifyOtpCOde(data: { email?: string; phoneNumber?: string; otpCode: string }) {
-    const user = await User.query()
-      .where(
+    const user = await User.query().where(
         data.email ? 'email' : 'phone_number',
         data.email ? data.email : (data.phoneNumber ?? '')
       )
@@ -130,6 +129,7 @@ export class AuthService {
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+    //@ts-ignore
     const monthUsers = await users.whereBetween('created_at', [startOfMonth, endOfMonth])
 
     const statistics = {

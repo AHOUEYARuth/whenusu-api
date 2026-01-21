@@ -6,9 +6,9 @@ import router from "@adonisjs/core/services/router"
 
 export const InformantRoutes = () => {
     router.group(() => {
-        router.post('/', [InformantsController, 'store']),
-            router.get('/', [InformantsController, 'index']),
-            router.put('/:id', [InformantsController, 'update']),
-            router.delete('/:id', [InformantsController, 'delete'])
+        router.post('/', [InformantsController, 'store']).use(middleware.checkPermission(['create-informant'])),
+            router.get('/', [InformantsController, 'index']).use,
+            router.put('/:id', [InformantsController, 'update']).use(middleware.checkPermission(['update-informant'])),
+            router.delete('/:id', [InformantsController, 'delete']).use(middleware.checkPermission(['delete-informant']))
     }).prefix('/informants').use(middleware.auth({guards: ['api']}))
 }

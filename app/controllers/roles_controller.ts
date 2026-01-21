@@ -23,7 +23,7 @@ export default class RolesController {
     await role.save()
 
     return response.status(200).json({
-      message: 'Role created successfully',
+      message: 'Rôle créé avec succès',
       data: role,
     })
   }
@@ -43,7 +43,7 @@ export default class RolesController {
     role.assignPermissions(permissionId)
 
     return response.status(200).json({
-      message: 'Permission assigned to role successfully',
+      message: 'Permission assignée au rôle avec succès',
       data: role,
     })
   }
@@ -63,7 +63,7 @@ export default class RolesController {
     await role.unassignPermissions(permissionId)
 
     return response.status(200).json({
-      message: 'Permission unassigned to role successfully',
+      message: 'Permission détachée du rôle avec succès',
       data: role,
     })
   }
