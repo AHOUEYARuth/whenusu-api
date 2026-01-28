@@ -22,5 +22,7 @@ COPY . .
 # Expose the port that the application listens on.
 EXPOSE 3333
 
+
+
 # Run the application.
-CMD npm run dev
+CMD node ace docs:generate && npm run dev
