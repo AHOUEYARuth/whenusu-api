@@ -26,3 +26,4 @@ EXPOSE 3333
 
 # Run the application.
 CMD node ace docs:generate && npm run dev
+
