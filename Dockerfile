@@ -22,6 +22,9 @@ COPY . .
 EXPOSE 3333
 
 
+# Run Migration
+RUN node ace migration:run
+
 
 # Run the application.
 CMD node ace docs:generate && npm run dev
