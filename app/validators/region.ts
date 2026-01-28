@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import vine, { SimpleMessagesProvider } from '@vinejs/vine'
+import vine from '@vinejs/vine'
 
 export const RegionValidator = vine.compile(
   vine.object({
