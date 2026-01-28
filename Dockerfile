@@ -1,26 +1,29 @@
+FROM node:22.16.0-alpine3.22 AS base
 
-ARG NODE_VERSION=22
+# All deps stage
+FROM base AS deps
+WORKDIR /app
+ADD package.json package-lock.json ./
+RUN npm ci
 
-FROM node:${NODE_VERSION}-alpine
+# Production only deps stage
+FROM base AS production-deps
+WORKDIR /app
+ADD package.json package-lock.json ./
+RUN npm ci --omit=dev
 
-# Use production node environment by default.
-#ENV NODE_ENV production
+# Build stage
+FROM base AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules /app/node_modules
+ADD . .
+RUN node ace build
 
-
-WORKDIR /usr/src/app
-
-# Copy package files first (better caching)
-COPY package.json package-lock.json ./
-
-# Install ALL dependencies (including dev)
-RUN npm install
-
-# Copy the rest of the source files into the image.
-COPY . .
-
-
-# Expose the port that the application listens on.
-EXPOSE 3333
-
-# Run the application.
-CMD npm run dev
+# Production stage
+FROM base
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=production-deps /app/node_modules /app/node_modules
+COPY --from=build /app/build /app
+EXPOSE 8080
+CMD ["node", "./bin/server.js"]
