@@ -67,4 +67,14 @@ export default class RolesController {
       data: role,
     })
   }
+/**
+ * 
+ * @getRoles
+ * @summary Récupérer tous les rôles
+ * @responseBody 200 - Array<Role>
+ */
+  public async getRoles(){
+    const roles = await Role.all()
+    return roles
+  }
 }
