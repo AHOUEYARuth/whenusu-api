@@ -43,6 +43,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 4444:8080
+
 volumes:
   db-data:
 # secrets:

@@ -25,5 +25,5 @@ EXPOSE 3333
 
 
 # Run the application.
-CMD node ace migration:run && node ace docs:generate && npm run dev
+CMD node ace migration:run --force && node ace docs:generate && npm run dev
 
