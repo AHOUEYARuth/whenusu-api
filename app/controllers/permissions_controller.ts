@@ -22,8 +22,22 @@ export default class PermissionsController {
     await permission.save()
 
     return response.status(200).json({
-      message: 'Permission created successfully',
+      message: 'Permission créée avec succès',
       data: permission,
+    })
+  }
+
+  /**
+   * 
+   * @getPermissions 
+   * @summary Liste des permissions 
+   * @responseBody 200 - <Permission> 
+   */
+  public async getPermissions({ response }: HttpContext) {
+    const permissions = await Permission.all()
+    return response.status(200).json({
+      message: 'liste des permissions',
+      data: permissions,
     })
   }
 }

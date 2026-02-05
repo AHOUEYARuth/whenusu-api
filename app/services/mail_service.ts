@@ -9,7 +9,7 @@ export class MailService {
     
     await mail.send((message) => {
        message
-         .from('ruahoueya@gmail.com')
+         .from('whenusu@gmail.com')
          .to(data.userEmail)
          .subject(data.subject)
          .htmlView('emails/otpcode_email_html', {data})

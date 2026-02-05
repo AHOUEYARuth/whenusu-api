@@ -194,7 +194,7 @@ export default class AuthController {
    *
    * @verifyUser
    * @summary Vérification d'utilisateur
-   * @requestFormDataBody {"email": {"type":"string", "required": "true"}, "phoneNumber": {"type": "string", "required": "true"}}
+   * @requestFormDataBody {"email": {"type":"string", "required": "true"}, "phoneNumber": {"type": "string", "required": "false"}}
    */
   public async verifyUser({ request, response }: HttpContext) {
     const { email, phoneNumber } = await request.body()
@@ -214,7 +214,7 @@ export default class AuthController {
    *
    * @verifyOtpCode
    * @summary Vérification de code OTP
-   * @requestFormDataBody {"email": {"type": "string", "required": "true"}, "phoneNumber": {"type":"string", "required": "true"}, "otpCode": {"type": "string", "required": "true"}}
+   * @requestFormDataBody {"email": {"type": "string", "required": "true"}, "phoneNumber": {"type":"string", "required": "false"}, "otpCode": {"type": "string", "required": "true"}}
    * @responseBody 200 - <User>
    */
   public async verifyOtpCode({ request, response }: HttpContext) {

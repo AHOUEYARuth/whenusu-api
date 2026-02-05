@@ -17,7 +17,7 @@ export class RegionService {
   }
 
   async getAllRegion() {
-    const regions = await Region.all()
+    const regions = await Region.query().preload('languages')
     return regions
   }
 
