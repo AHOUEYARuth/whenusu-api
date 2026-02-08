@@ -77,8 +77,14 @@ export class TraditionService {
     return tradition
   }
 
-  async getTraditions(page:number = 1) {
-    const traditions = await Tradition.query().paginate(page,4);
+  async getTraditions(page: number = 1) {
+    const traditions = await Tradition.query()
+      .preload('user')
+      .preload('category')
+      .preload('region')
+      .preload('language')
+      .preload('informant')
+      .paginate(page, 4)
     return traditions
   }
 
@@ -92,7 +98,14 @@ export class TraditionService {
   }
 
   async getTradition(traditionId: string) {
-    const tradition = await Tradition.query().where('id', traditionId).firstOrFail()
+    const tradition = await Tradition.query()
+      .where('id', traditionId)
+      .preload('user')
+      .preload('category')
+      .preload('region')
+      .preload('language')
+      .preload('informant')
+      .firstOrFail()
     return tradition
   }
 
@@ -103,6 +116,11 @@ export class TraditionService {
     languageId?: string
   }) {
     let query = Tradition.query()
+      .preload('user')
+      .preload('category')
+      .preload('region')
+      .preload('language')
+      .preload('informant')
 
     if (filter.title) query.whereILike('title', `%${filter.title}%`)
     if (filter.categoryId) query.where('id', filter.categoryId)
@@ -114,7 +132,13 @@ export class TraditionService {
   }
 
   async popularTraditionList() {
-    const popularTradition = await Tradition.query().orderBy('favoris_count', 'desc')
+    const popularTradition = await Tradition.query()
+      .preload('user')
+      .preload('category')
+      .preload('region')
+      .preload('language')
+      .preload('informant')
+      .orderBy('favoris_count', 'desc')
     return popularTradition.slice(0, 5)
   }
 

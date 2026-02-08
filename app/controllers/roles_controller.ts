@@ -38,9 +38,14 @@ export default class RolesController {
    */
   public async assignPermissionToRole({ request, response }: HttpContext) {
     const roleId = request.params().id
-    const { permissionId } = request.body()
+    const { permissions } = request.body()
+    let permissionIds = permissions
+
+    if (typeof permissions === 'string') {
+      permissionIds = permissions.split(',')
+    }
     const role = await Role.query().where('id', roleId).firstOrFail()
-    role.assignPermissions(permissionId)
+    await role.assignPermissions(permissionIds)
 
     return response.status(200).json({
       message: 'Permission assignée au rôle avec succès',
@@ -58,9 +63,14 @@ export default class RolesController {
    */
   public async unassignPermissionToRole({ request, response }: HttpContext) {
     const roleId = request.params().id
-    const { permissionId } = request.body()
+    const { permissions } = request.body()
+    let permissionIds = permissions
+
+    if (typeof permissions === 'string') {
+      permissionIds = permissions.split(',')
+    }
     const role = await Role.query().where('id', roleId).firstOrFail()
-    await role.unassignPermissions(permissionId)
+    await role.unassignPermissions(permissionIds)
 
     return response.status(200).json({
       message: 'Permission détachée du rôle avec succès',

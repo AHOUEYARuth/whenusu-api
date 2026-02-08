@@ -109,10 +109,15 @@ export default class RegionsController {
    */
   public async assignLanguagesToRegion({ request, response }: HttpContext) {
     const regionId = request.params().id
-    const { languageId } = request.body()
+    const { languages } = request.body()
+    let languageIds = languages
+
+    if (typeof languages === 'string') {
+      languageIds = languages.split(',')
+    }
     const region = await Region.query().where('id', regionId).firstOrFail()
 
-    await region.assignLanguages(languageId)
+    await region.assignLanguages(languageIds)
     return response.status(200).json({
       message: 'Langue ajoutée à région',
       region,
@@ -129,10 +134,15 @@ export default class RegionsController {
    */
   public async unassignLanguagesToRegion({ request, response }: HttpContext) {
     const regionId = request.params().id
-    const { languageId } = request.body()
+    const { languages } = request.body()
+    let languageIds = languages
+
+    if (typeof languages === 'string') {
+      languageIds = languages.split(',')
+    }
     const region = await Region.query().where('id', regionId).firstOrFail()
 
-    await region.unassignLanguages(languageId)
+    await region.unassignLanguages(languageIds)
     return response.status(200).json({
       message: 'Langue détachée de région',
       region,

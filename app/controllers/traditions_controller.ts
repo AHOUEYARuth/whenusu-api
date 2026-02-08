@@ -46,7 +46,7 @@ export default class TraditionsController {
    *
    * @update
    * @summary Modifier une  tradition
-   * @paramPath id - Identifiant de la tradition - @type("string") @required
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @requestFormDataBody {"title": {"type": "string"}, "transcription": {"type": "string"}, "language_id": {"type": "string"}, "region_id": {"type": "string"}, "category_id": {"type": "string"}, "cover_img": {"type":"string","format":"binary"}, "media_url":{"type":"string","format":"binary"}}
    * @responseBody 200 - <Tradition>
    */
@@ -106,7 +106,7 @@ export default class TraditionsController {
    *
    * @delete
    * @summary Supprimer une tradition
-   * @paramPath id - Identifiant de la tradition - @type("string") @required
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
    */
   public async delete({ response, params }: HttpContext) {
     try {
@@ -125,7 +125,7 @@ export default class TraditionsController {
    *
    * @show
    * @summary Récupérer les détails d'une tradition
-   * @paramPath id - Identifiant de la tradition - @type("string") @required
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
   public async show({ response, params }: HttpContext) {
@@ -160,7 +160,7 @@ export default class TraditionsController {
    *
    * @validateTradition
    * @summary Valider une tradition
-   * @paramPath id - Identifiant de la tradition - @type("string") @required
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
   public async validateTradition({ response, params }: HttpContext) {
@@ -181,7 +181,7 @@ export default class TraditionsController {
    *
    * @rejectTradition
    * @summary Rejeter une tradition
-   * @paramPath id - Identifiant de la tradition - @type("string") @required
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
   public async rejectTradition({ response, params }: HttpContext) {
@@ -202,7 +202,7 @@ export default class TraditionsController {
    *
    * @archiveTradition
    * @summary Archiver une tradition
-   * @paramPath id - Identifiant de la tradition - @type("string") @required
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
   public async archiveTradition({ response, params }: HttpContext) {

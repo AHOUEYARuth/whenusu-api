@@ -126,11 +126,16 @@ export default class AuthController {
    */
   public async assignRoleToUser({ request, response }: HttpContext) {
     const userId = request.params().id
-    const { rolesId } = request.body()
+    const { roles } = request.body()
+    let roleIds = roles
+
+    if (typeof roles === 'string') {
+      roleIds = roles.split(',')
+    }
 
     const user = await User.query().where('id', userId).firstOrFail()
 
-    await user.assignRoles(rolesId)
+    await user.assignRoles(roleIds)
 
     return response.status(200).json({
       message: 'Rôle(s) assigné(s) avec succès',
@@ -142,17 +147,21 @@ export default class AuthController {
    *
    * @unassignRoleToUser
    * @summary Détacher un rôle d'un utilisateur
-   * @paramPath id - Identifiant de l'utilisateur - @type("string") @required
+   * @paramPath id - Identifiant de l'utilisateur - @type(string) @required
    * @requestFormDataBody {"roles": {"type": "array", "required": "true", "items":{"type": "string"}}}
    * @responseBody 200 - <User>
    */
   public async unassignRoleToUser({ request, response }: HttpContext) {
     const userId = request.params().id
-    const { rolesId } = request.body()
+    const { roles } = request.body()
+    let roleIds = roles
 
+    if (typeof roles === 'string') {
+      roleIds = roles.split(',')
+    }
     const user = await User.query().where('id', userId).firstOrFail()
 
-    await user.unassignRoles(rolesId)
+    await user.unassignRoles(roleIds)
 
     return response.status(200).json({
       message: 'Rôle(s) desassigné(s) avec succès',
@@ -164,17 +173,17 @@ export default class AuthController {
    *
    * @forgotPassword
    * @summary Mot de passe oublié
-   * @requestFormDataBody {"userId": {"type": "string", "required": "true"}, "newPassWord": {"type": "string", "required": "true"}, "confirmPassword": {"type":"string", "required": "true"}}
+   * @requestFormDataBody {"email": {"type": "string", "required": "true"}, "newPassword": {"type": "string", "required": "true"}, "confirmPassword": {"type":"string", "required": "true"}}
    * @responseBody 200 - <User>
    */
   public async forgotPassword({ request, response }: HttpContext) {
-    const { userId, newPassword, confirmPassword } = await request.body()
+    const { email, newPassword, confirmPassword } = await request.body()
     if (newPassword !== confirmPassword) {
       return response.status(400).json({
         message: 'Le mot de passe de confirmation ne correspond pas',
       })
     } else {
-      const user = await this.authService.ressetPassword(userId, newPassword)
+      const user = await this.authService.ressetPassword(email, newPassword)
       console.log('user controller')
       console.log(user)
       if (!user) {

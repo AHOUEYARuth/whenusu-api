@@ -13,7 +13,7 @@ export default class FavoritesController {
    *
    * @store
    * @summary Mettre une tradition en favoris
-   * @paramPath id - Identifiant de la tradition - @type("string") @required
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
   public async store({ response, auth, params }: HttpContext) {

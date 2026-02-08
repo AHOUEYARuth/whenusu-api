@@ -73,8 +73,8 @@ export class AuthService {
     
   }
 
-  async ressetPassword(userId: string, newPassword: string) {
-    const user = await User.findBy('id', userId)
+  async ressetPassword(email: string, newPassword: string) {
+    const user = await User.findBy('email', email)
     if (!user) {
       console.log('no user')
       return null

@@ -43,7 +43,7 @@ export default class InformantsController {
    *
    * @update
    * @summary Modifier un informateur
-   * @paramPath id - Identifiant de l'informateur - @type("string") @required
+   * @paramPath id - Identifiant de l'informateur - @type(string) @required
    * @requestFormDataBody {"name": {"type": "string"}, "phoneNumber": {"type": "string"}, "avatar_url": {"type": "string", "format":"binary"}}
    * @responseBody 200 - <Informant>
    */
@@ -87,7 +87,7 @@ export default class InformantsController {
    * 
    * @delete 
    * @summary Supprimer un informateur 
-   * @paramPath id - Identifiant de l'informateur - @type("string") @required
+   * @paramPath id - Identifiant de l'informateur - @type(string) @required
    * 
    */
   public async delete({ response, params }: HttpContext) {
