@@ -125,7 +125,7 @@ export class AuthService {
   async getUsers(page: number = 1) {
     const users = User.query();
     const allUsers = await users;
-    const usersPaginate = await users.paginate(page, 2);
+    const usersPaginate = await users.paginate(page, 50);
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)

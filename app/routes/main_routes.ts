@@ -10,6 +10,7 @@ import { InformantRoutes } from "./informant_routes.js";
 import { TraditionRoutes } from "./tradition_routes.js";
 import { FavoriteRoute } from "./favorite_routes.js";
 import { UserRoutes } from "./user_routes.js";
+import { StatisticsRoutes } from "./stats_routes.js";
 
 router.group(() => {
     AuthRoutes(),
@@ -21,5 +22,6 @@ router.group(() => {
     InformantRoutes(),
     TraditionRoutes(),
     FavoriteRoute(),
-    UserRoutes()
+    UserRoutes(),
+    StatisticsRoutes()
 }).prefix('/api')

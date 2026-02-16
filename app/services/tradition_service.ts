@@ -84,7 +84,7 @@ export class TraditionService {
       .preload('region')
       .preload('language')
       .preload('informant')
-      .paginate(page, 4)
+      .paginate(page, 50)
     return traditions
   }
 
