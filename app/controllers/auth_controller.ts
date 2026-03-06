@@ -19,7 +19,7 @@ export default class AuthController {
    *
    * @register
    * @summary Création d'utilisateur
-   * @requestFormDataBody {"last_name":{"type":"string", "required": "true"},"first_name":{"type":"string", "required": "true"},"email":{"type":"string"},"phone_number":{"type":"string", "required": "true"},"password":{"type":"string", "required": "true"},"region_id":{"type":"string"},"avatar_url":{"type":"string","format":"binary"}}
+   * @requestFormDataBody {"last_name":{"type":"string", "required": "true"},"first_name":{"type":"string", "required": "true"},"email":{"type":"string"},"phone_number":{"type":"string", "required": "true"},"password":{"type":"string", "required": "true"},"region_id":{"type":"string"},"avatar_url":{"type":"string","format":"binary"}, "role_id":{"type": "string"}}
    * @responseBody 200 - <User>
    *
    */
@@ -348,6 +348,26 @@ export default class AuthController {
       await this.authService.changeSendNotifStatus(auth.user!.id)
       return response.status(200).json({
         message: 'Etat de notification modifié',
+      })
+    } catch (error) {
+      return response.status(500).json({
+        message: error.message || "Une erreur s'est produite",
+      })
+    }
+  }
+
+  /**
+   *
+   * @showUser
+   * @summary Details d'un user
+   * @responseBody 200 - <User>
+   */
+  public async showUser({ params, response }: HttpContext) {
+    try {
+      const user = await this.authService.getUserById(params.id)
+      return response.status(200).json({
+        message: 'User details',
+        data: user,
       })
     } catch (error) {
       return response.status(500).json({

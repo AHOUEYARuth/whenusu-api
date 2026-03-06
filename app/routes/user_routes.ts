@@ -8,6 +8,7 @@ import router from "@adonisjs/core/services/router"
 export const UserRoutes = () => {
     router.group(() => {
         router.get('/', [AuthController, 'getUsers']).use(middleware.checkPermission(['get-users'])),
-        router.post('/', [AuthController, 'sendNotifStatus'])
+        router.post('/', [AuthController, 'sendNotifStatus']),
+        router.get('/:id', [AuthController, 'showUser']).use(middleware.checkPermission(['get-user-details']))
     }).prefix('/users').use(middleware.auth({guards: ['api']}))
 }

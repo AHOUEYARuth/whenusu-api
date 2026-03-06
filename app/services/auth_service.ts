@@ -123,7 +123,9 @@ export class AuthService {
     return user
   }
   async getUsers(page: number = 1) {
-    const users = User.query();
+    const users = User.query().preload('roles', (rolesQuery) => {
+      rolesQuery.preload('permissions')
+    }).preload('region').preload('traditions');
     const allUsers = await users;
     const usersPaginate = await users.paginate(page, 50);
     const now = new Date()
@@ -147,5 +149,14 @@ export class AuthService {
     if (!user) throw new Error('Utilisateur non trouvé')
     user.sendNotif = !user.sendNotif
     user.save()
+  }
+
+  async getUserById(userId: string) {
+    const userQuery = User.query().preload('roles', (rolesQuery) => {
+      rolesQuery.preload('permissions')
+    }).preload('region').preload('traditions');
+    const user = await userQuery.where("id", userId).first()
+    if (!user) throw new Error('Utilisateur non trouvé')
+    return user
   }
 }
