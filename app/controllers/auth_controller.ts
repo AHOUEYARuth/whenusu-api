@@ -134,8 +134,10 @@ export default class AuthController {
     }
 
     const user = await User.query().where('id', userId).firstOrFail()
-
     await user.assignRoles(roleIds)
+    await user.load('roles', (rolesQuery) => {
+      rolesQuery.preload('permissions')
+    })
 
     return response.status(200).json({
       message: 'Rôle(s) assigné(s) avec succès',
@@ -162,6 +164,9 @@ export default class AuthController {
     const user = await User.query().where('id', userId).firstOrFail()
 
     await user.unassignRoles(roleIds)
+    await user.load('roles', (rolesQuery) => {
+      rolesQuery.preload('permissions')
+    })
 
     return response.status(200).json({
       message: 'Rôle(s) desassigné(s) avec succès',
