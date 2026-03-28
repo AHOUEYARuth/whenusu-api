@@ -84,7 +84,7 @@ export default class RolesController {
  * @responseBody 200 - Array<Role>
  */
   public async getRoles(){
-    const roles = await Role.all()
+    const roles = await Role.query().preload('permissions')
     return roles
   }
 }
