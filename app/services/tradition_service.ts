@@ -2,6 +2,7 @@
 
 import Tradition from "#models/tradition";
 import { cuid } from "@adonisjs/core/helpers";
+import app from "@adonisjs/core/services/app";
 
 
 export class TraditionService {
@@ -18,7 +19,7 @@ export class TraditionService {
     if (data.cover_img) {
       const fileName = `${cuid()}.${data.cover_img.extname}`
 
-      await data.cover_img.move('uploads/traditions/img', {
+      await data.cover_img.move(app.publicPath('uploads/traditions/img'), {
         name: fileName,
         overwrite: true,
       })
@@ -29,7 +30,7 @@ export class TraditionService {
     if (data.media_url) {
       const fileName = `${cuid()}.${data.media_url.extname}`
 
-      await data.media_url.move('uploads/traditions/media', {
+      await data.media_url.move(app.publicPath('uploads/traditions/media'), {
         name: fileName,
         overwrite: true,
       })
@@ -54,7 +55,7 @@ export class TraditionService {
     if (data.cover_img) {
       const fileName = `${cuid()}.${data.cover_img.extname}`
 
-      await data.cover_img.move('uploads/traditions/img', {
+      await data.cover_img.move(app.publicPath('uploads/traditions/img'), {
         name: fileName,
         overwrite: true,
       })
@@ -65,7 +66,7 @@ export class TraditionService {
     if (data.media_url) {
       const fileName = `${cuid()}.${data.media_url.extname}`
 
-      await data.media_url.move('uploads/traditions/media', {
+      await data.media_url.move(app.publicPath('uploads/traditions/media'), {
         name: fileName,
         overwrite: true,
       })

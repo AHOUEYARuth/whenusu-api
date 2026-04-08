@@ -2,6 +2,7 @@
 
 import Informant from '#models/informant'
 import { cuid } from '@adonisjs/core/helpers'
+import app from '@adonisjs/core/services/app'
 
 export class InformantService {
   async createInformant(data: any, avatarUrl?: any) {
@@ -12,7 +13,7 @@ export class InformantService {
     if (avatarUrl) {
       const fileName = `${cuid()}.${avatarUrl.extname}`
 
-      await avatarUrl.move('uploads/avatars', {
+      await avatarUrl.move(app.publicPath('uploads/avatars'), {
         name: fileName,
         overwrite: true,
       })
@@ -35,7 +36,7 @@ export class InformantService {
      if (avatarUrl) {
        const fileName = `${cuid()}.${avatarUrl.extname}`
 
-       await avatarUrl.move('uploads/avatars', {
+       await avatarUrl.move(app.publicPath('uploads/avatars'), {
          name: fileName,
          overwrite: true,
        })

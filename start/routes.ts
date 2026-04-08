@@ -8,6 +8,9 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import app from '@adonisjs/core/services/app'
+import { sep, normalize } from 'node:path'
+
 import '../app/routes/main_routes.js'
 
 import AutoSwagger from 'adonis-autoswagger'
@@ -28,4 +31,15 @@ router.get('/', async () => {
   return {
     hello: 'world',
   }
+})
+
+router.get('/uploads/*', async ({ request, response }) => {
+  const filePath = request.param('*').join(sep)
+  const normalizedPath = normalize(app.publicPath('uploads', filePath))
+
+  if (!normalizedPath.startsWith(app.publicPath('uploads'))) {
+    return response.safeStatus(403).send('Forbidden')
+  }
+
+  return response.download(normalizedPath)
 })

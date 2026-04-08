@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { belongsTo, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import { belongsTo, column, computed, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import env from '#start/env'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import BaseModel from './base_model.js'
@@ -35,8 +36,14 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string
 
-  @column()
+  @column({ serializeAs: null })
   declare avatarUrl: string | null
+
+  @computed({ serializeAs: 'avatar_url' })
+  get avatarUrlFull(): string | null {
+    if (!this.avatarUrl) return null
+    return this.avatarUrl.startsWith('http') ? this.avatarUrl : `${env.get('APP_URL')}${this.avatarUrl}`
+  }
 
   @column()
   declare provider: string

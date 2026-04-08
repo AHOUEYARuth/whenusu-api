@@ -2,6 +2,7 @@
 
 import User from '#models/user'
 import { cuid } from '@adonisjs/core/helpers'
+import app from '@adonisjs/core/services/app'
 import { MailService } from './mail_service.js'
 import hash from '@adonisjs/core/services/hash'
 import { Authenticator } from '@adonisjs/auth'
@@ -26,7 +27,7 @@ export class AuthService {
     if (data.avatar_url) {
       const fileName = `${cuid()}.${data.avatar_url.extname}`
 
-      await data.avatar_url.move('uploads/avatars', {
+      await data.avatar_url.move(app.publicPath('uploads/avatars'), {
         name: fileName,
         overwrite: true,
       })
@@ -112,7 +113,7 @@ export class AuthService {
     if (data.avatar_url) {
       const fileName = `${cuid()}.${data.avatar_url.extname}`
 
-      await data.avatar_url.move('uploads/avatars', {
+      await data.avatar_url.move(app.publicPath('uploads/avatars'), {
         name: fileName,
         overwrite: true,
       })

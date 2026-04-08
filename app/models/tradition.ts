@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { belongsTo, column } from '@adonisjs/lucid/orm'
+import { belongsTo, column, computed } from '@adonisjs/lucid/orm'
+import env from '#start/env'
 import BaseModel from './base_model.js';
 import { slugify } from '@adonisjs/lucid-slugify';
 import User from './user.js';
@@ -37,11 +38,23 @@ export default class Tradition extends BaseModel {
   @column()
   declare transcription: string
 
-  @column()
+  @column({ serializeAs: null })
   declare coverImg: string
 
-  @column()
+  @computed({ serializeAs: 'cover_img' })
+  get coverImgFull(): string | null {
+    if (!this.coverImg) return null
+    return this.coverImg.startsWith('http') ? this.coverImg : `${env.get('APP_URL')}${this.coverImg}`
+  }
+
+  @column({ serializeAs: null })
   declare mediaUrl: string | null
+
+  @computed({ serializeAs: 'media_url' })
+  get mediaUrlFull(): string | null {
+    if (!this.mediaUrl) return null
+    return this.mediaUrl.startsWith('http') ? this.mediaUrl : `${env.get('APP_URL')}${this.mediaUrl}`
+  }
 
   @column()
   declare status: string
