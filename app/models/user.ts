@@ -12,6 +12,7 @@ import Permission from './permission.js'
 import Region from './region.js'
 import Tradition from './tradition.js'
 import Category from './category.js'
+import Language from './language.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -66,6 +67,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare fcmToken: string | null
 
+  @column()
+  declare languageId: string | null
+
   @manyToMany(() => Role, {
     pivotTable: 'role_users',
   })
@@ -81,6 +85,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @belongsTo(() => Region)
   declare region: BelongsTo<typeof Region>
+
+  @belongsTo(() => Language)
+  declare preferredLanguage: BelongsTo<typeof Language>
 
   @hasMany(() => Tradition)
   declare traditions: HasMany<typeof Tradition>

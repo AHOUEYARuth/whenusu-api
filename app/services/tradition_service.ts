@@ -17,6 +17,7 @@ export class TraditionService {
     const tradition = new Tradition()
     tradition.title = data.title
     tradition.userId = userId
+    tradition.createdBy = userId
     tradition.categoryId = data.category_id
     tradition.languageId = data.language_id
     tradition.regionId = data.region_id
@@ -105,12 +106,14 @@ export class TraditionService {
     return traditions
   }
 
-  async deleteTradition(traditionId: string) {
+  async deleteTradition(traditionId: string, userId: string) {
     const tradition = await Tradition.query().where('id', traditionId).firstOrFail()
     if (!tradition) {
       throw new Error('Tradition non trouvé')
     }
 
+    tradition.deletedBy = userId
+    await tradition.save()
     await tradition.delete()
   }
 
@@ -159,11 +162,12 @@ export class TraditionService {
     return popularTradition.slice(0, 5)
   }
 
-  async validateTradition(traditionId: string) {
+  async validateTradition(traditionId: string, userId: string) {
     const tradition = await Tradition.query().where('id', traditionId).first()
     if (!tradition) throw new Error('Tradition non trouvée')
     if ((tradition.status === 'validate' )) throw new Error('Tradition déjà validée') 
     tradition.status = 'validate'
+    tradition.validatedBy = userId
     await tradition.save()
 
     this.notificationSender.sendToAllWithRole(
@@ -175,12 +179,13 @@ export class TraditionService {
     return tradition
   }
 
-  async rejectTradition(traditionId: string) {
+  async rejectTradition(traditionId: string, userId: string) {
     const tradition = await Tradition.query().where('id', traditionId).first()
     if (!tradition) throw new Error('Tradition non trouvée')
     if (tradition.status === 'rejected' || tradition.status === 'validate')
       throw new Error('Impossible de rejecter cette tradition')
     tradition.status = 'rejected'
+    tradition.rejectedBy = userId
     await tradition.save()
 
     this.notificationSender.sendToAllWithRole(
@@ -192,11 +197,12 @@ export class TraditionService {
     return tradition
   }
 
-  async archiveTradition(traditionId: string) {
+  async archiveTradition(traditionId: string, userId: string) {
     const tradition = await Tradition.query().where('id', traditionId).first()
     if (!tradition) throw new Error('Tradition non trouvée')
     if (tradition.status === 'archived') throw new Error("Impossible d'archiver cette tradition")
     tradition.status = 'archived'
+    tradition.archivedBy = userId
     await tradition.save()
 
     this.notificationSender.sendToAllWithRole(
@@ -208,12 +214,13 @@ export class TraditionService {
     return tradition
   }
 
-  async publishTradition(traditionId: string) {
+  async publishTradition(traditionId: string, userId: string) {
     const tradition = await Tradition.query().where('id', traditionId).first()
     if (!tradition) throw new Error('Tradition non trouvée')
     // On suppose que "validate" et "publish" sont proches, mais on peut ajouter un statut "published" si nécessaire
     // Pour l'instant on suit la demande de "publié"
     tradition.status = 'published'
+    tradition.publishedBy = userId
     await tradition.save()
 
     this.notificationSender.sendToAllDifferentiated({

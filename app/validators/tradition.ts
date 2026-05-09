@@ -15,8 +15,7 @@ export const CreateTraditionValidator = vine.compile(
       size: '10mb',
     }),
     media_url: vine.file({
-      extnames: ['mp3', 'wav', 'mov', 'm4a', 'mp4'],
-      size: '80mb',
+      extnames: ['mp3', 'wav', 'mov', 'm4a', 'mp4']
     }),
   })
 )

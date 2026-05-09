@@ -6,7 +6,7 @@ import router from "@adonisjs/core/services/router"
 
 export const TraditionRoutes = () => {
     router.group(() => {
-        router.post('/', [TraditionsController, 'store']).use(middleware.checkPermission(['create-tradition'])), 
+        router.post('/', [TraditionsController, 'store']).use(middleware.checkPermission(['create-tradition'])),
         router.get('/', [TraditionsController, 'index'])/*.use(middleware.checkPermission(['get-tradition']))*/, 
         router.put('/:id', [TraditionsController, 'update']).use(middleware.checkPermission(['update-tradition'])), 
         router.delete('/:id', [TraditionsController, 'delete']).use(middleware.checkPermission(['delete-tradition'])), 

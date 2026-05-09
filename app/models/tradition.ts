@@ -41,6 +41,24 @@ export default class Tradition extends BaseModel {
   @column({ serializeAs: null })
   declare coverImg: string
 
+  @column()
+  declare createdBy: string | null
+
+  @column()
+  declare validatedBy: string | null
+
+  @column()
+  declare publishedBy: string | null
+
+  @column()
+  declare archivedBy: string | null
+
+  @column()
+  declare rejectedBy: string | null
+
+  @column()
+  declare deletedBy: string | null
+
   @computed({ serializeAs: 'cover_img' })
   get coverImgFull(): string | null {
     if (!this.coverImg) return null
@@ -64,6 +82,24 @@ export default class Tradition extends BaseModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @belongsTo(() => User, { foreignKey: 'createdBy' })
+  declare creator: BelongsTo<typeof User>
+
+  @belongsTo(() => User, { foreignKey: 'validatedBy' })
+  declare validator: BelongsTo<typeof User>
+
+  @belongsTo(() => User, { foreignKey: 'publishedBy' })
+  declare publisher: BelongsTo<typeof User>
+
+  @belongsTo(() => User, { foreignKey: 'archivedBy' })
+  declare archiver: BelongsTo<typeof User>
+
+  @belongsTo(() => User, { foreignKey: 'rejectedBy' })
+  declare rejecter: BelongsTo<typeof User>
+
+  @belongsTo(() => User, { foreignKey: 'deletedBy' })
+  declare deleter: BelongsTo<typeof User>
 
   @belongsTo(() => Category)
   declare category: BelongsTo<typeof Category>

@@ -160,4 +160,12 @@ export class AuthService {
     if (!user) throw new Error('Utilisateur non trouvé')
     return user
   }
+
+  async changeLanguage(userId: string, languageId: string) {
+    const user = await User.query().where("id", userId).first()
+    if (!user) throw new Error('Utilisateur non trouvé')
+    user.languageId = languageId
+    await user.save()
+    return user
+  }
 }

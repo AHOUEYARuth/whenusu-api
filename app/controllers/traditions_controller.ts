@@ -108,9 +108,10 @@ export default class TraditionsController {
    * @summary Supprimer une tradition
    * @paramPath id - Identifiant de la tradition - @type(string) @required
    */
-  public async delete({ response, params }: HttpContext) {
+   public async delete({ response, params , auth }: HttpContext) {
     try {
-      await this.traditionService.deleteTradition(params.id)
+      const user = auth.user!
+      await this.traditionService.deleteTradition(params.id, user.id)
       return response.status(200).json({
         message: 'Tradition supprimée avec succès',
       })
@@ -163,9 +164,10 @@ export default class TraditionsController {
    * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
-  public async validateTradition({ response, params }: HttpContext) {
+  public async validateTradition({ response, params, auth }: HttpContext) {
     try {
-      const traditionValidate = await this.traditionService.validateTradition(params.id)
+      const user = auth.user!
+      const traditionValidate = await this.traditionService.validateTradition(params.id, user.id)
       return response.status(200).json({
         message: 'Tradition validée avec succès',
         data: traditionValidate,
@@ -184,9 +186,10 @@ export default class TraditionsController {
    * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
-  public async rejectTradition({ response, params }: HttpContext) {
+  public async rejectTradition({ response, params, auth }: HttpContext) {
     try {
-      const traditionRejected = await this.traditionService.rejectTradition(params.id)
+      const user = auth.user!
+      const traditionRejected = await this.traditionService.rejectTradition(params.id, user.id)
       return response.status(200).json({
         message: 'Tradition rejetée avec succès',
         data: traditionRejected,
@@ -205,9 +208,10 @@ export default class TraditionsController {
    * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
-  public async archiveTradition({ response, params }: HttpContext) {
+  public async archiveTradition({ response, params, auth }: HttpContext) {
     try {
-      const traditionArchived = await this.traditionService.archiveTradition(params.id)
+      const user = auth.user!
+      const traditionArchived = await this.traditionService.archiveTradition(params.id, user.id)
       return response.status(200).json({
         message: 'Tradition archivée avec succès',
         data: traditionArchived,
@@ -226,9 +230,10 @@ export default class TraditionsController {
    * @paramPath id - Identifiant de la tradition - @type(string) @required
    * @responseBody 200 - <Tradition>
    */
-  public async publishTradition({ response, params }: HttpContext) {
+  public async publishTradition({ response, params, auth }: HttpContext) {
     try {
-      const traditionPublished = await this.traditionService.publishTradition(params.id)
+      const user = auth.user!
+      const traditionPublished = await this.traditionService.publishTradition(params.id, user.id)
       return response.status(200).json({
         message: 'Tradition publiée avec succès',
         data: traditionPublished,

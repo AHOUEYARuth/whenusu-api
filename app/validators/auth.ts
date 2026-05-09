@@ -49,6 +49,12 @@ export const updateUserValidator = vine.compile(
   })
 )
 
+export const UpdateLanguageValidator = vine.compile(
+  vine.object({
+    language_id: vine.string().exists({ table: 'languages', column: 'id' }),
+  })
+)
+
 export const messageProviderAuth = {
   'last_name.required': 'Le nom  est obligatoire.',
   'last_name.minLength': 'Le nom doit contenir au moins 3 caractères.',

@@ -2,7 +2,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
 import { AuthService } from '#services/auth_service'
-import { LoginValidator, messageProviderAuth, RegisterValidator, updateUserValidator } from '#validators/auth'
+import { LoginValidator, messageProviderAuth, RegisterValidator, updateUserValidator, UpdateLanguageValidator } from '#validators/auth'
 import User from '#models/user'
 import hash from '@adonisjs/core/services/hash'
 import Role from '#models/role'
@@ -377,6 +377,28 @@ export default class AuthController {
     } catch (error) {
       return response.status(500).json({
         message: error.message || "Une erreur s'est produite",
+      })
+    }
+  }
+
+  /**
+   *
+   * @updateLanguage
+   * @summary Mettre à jour la langue préférée de l'utilisateur
+   * @requestFormDataBody {"language_id":{"type":"string", "required": "true"}}
+   * @responseBody 200 - <User>
+   */
+  public async updateLanguage({ request, response, auth }: HttpContext) {
+    try {
+      const { language_id } = await request.validateUsing(UpdateLanguageValidator)
+      const user = await this.authService.changeLanguage(auth.user!.id, language_id)
+      return response.status(200).json({
+        message: 'Langue préférée mise à jour avec succès',
+        data: user,
+      })
+    } catch (error) {
+      return response.status(500).json({
+        message: error.message || "Une erreur s'est produite lors de la mise à jour de la langue",
       })
     }
   }
