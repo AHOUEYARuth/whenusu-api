@@ -2,7 +2,7 @@
 node_modules
 build
 tmp
-
+config/firebase/service-account.json
 # Secrets
 .env
 .env.local
