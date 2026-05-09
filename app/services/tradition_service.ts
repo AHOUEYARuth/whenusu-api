@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
 
 import Tradition from "#models/tradition";
+import User from "#models/user";
+import Notification from "#models/notification";
+import admin from "#config/firebase";
 import { cuid } from "@adonisjs/core/helpers";
 import app from "@adonisjs/core/services/app";
 
@@ -38,7 +41,56 @@ export class TraditionService {
       tradition.mediaUrl = `/uploads/traditions/media/${fileName}`
     }
     await tradition.save()
+
+    // Envoi des notifications globales
+    this.sendGlobalNotification(tradition).catch(console.error)
+
     return tradition
+  }
+
+  private async sendGlobalNotification(tradition: Tradition) {
+    const users = await User.query().preload('roles')
+    
+    if (users.length === 0) return
+
+    const fcmTokens: string[] = []
+    const dbNotifications: any[] = []
+
+    users.forEach((user) => {
+      if (user.sendNotif && user.roles.length > 0) {
+        if (user.fcmToken) {
+          fcmTokens.push(user.fcmToken)
+        }
+        dbNotifications.push({
+          userId: user.id,
+          title: 'Nouvelle tradition disponible',
+          description: `Une nouvelle tradition intitulée "${tradition.title}" a été ajoutée.`,
+          read: false,
+        })
+      }
+    })
+
+    // Création des notifications en base de données
+    if (dbNotifications.length > 0) {
+      await Notification.createMany(dbNotifications)
+    }
+
+    // Envoi des push via Firebase (par paquets de 500)
+    if (fcmTokens.length > 0) {
+      for (let i = 0; i < fcmTokens.length; i += 500) {
+        const batch = fcmTokens.slice(i, i + 500)
+        await admin.messaging().sendEachForMulticast({
+          tokens: batch,
+          notification: {
+            title: 'Nouvelle tradition disponible',
+            body: `Une nouvelle tradition intitulée "${tradition.title}" a été ajoutée.`,
+          },
+          data: {
+            traditionId: tradition.id,
+          }
+        })
+      }
+    }
   }
 
   async updateTradition(traditionId: string, data: any) {

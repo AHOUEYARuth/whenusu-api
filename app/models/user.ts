@@ -63,6 +63,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare sendNotif: boolean
 
+  @column()
+  declare fcmToken: string | null
+
   @manyToMany(() => Role, {
     pivotTable: 'role_users',
   })

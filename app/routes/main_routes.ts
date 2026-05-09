@@ -11,6 +11,7 @@ import { TraditionRoutes } from "./tradition_routes.js";
 import { FavoriteRoute } from "./favorite_routes.js";
 import { UserRoutes } from "./user_routes.js";
 import { StatisticsRoutes } from "./stats_routes.js";
+import { NotificationRoutes } from "./notification_routes.js";
 
 router.group(() => {
     AuthRoutes(),
@@ -23,5 +24,6 @@ router.group(() => {
     TraditionRoutes(),
     FavoriteRoute(),
     UserRoutes(),
-    StatisticsRoutes()
+    StatisticsRoutes(),
+    NotificationRoutes()
 }).prefix('/api')
