@@ -218,4 +218,25 @@ export default class TraditionsController {
       })
     }
   }
+
+  /**
+   *
+   * @publishTradition
+   * @summary Publier une tradition
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
+   * @responseBody 200 - <Tradition>
+   */
+  public async publishTradition({ response, params }: HttpContext) {
+    try {
+      const traditionPublished = await this.traditionService.publishTradition(params.id)
+      return response.status(200).json({
+        message: 'Tradition publiée avec succès',
+        data: traditionPublished,
+      })
+    } catch (error) {
+      return response.status(500).json({
+        message: error.message || "Une erreur s'est produite lors de la publication de la tradition",
+      })
+    }
+  }
 }

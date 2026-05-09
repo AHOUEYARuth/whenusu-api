@@ -14,7 +14,8 @@ export const TraditionRoutes = () => {
         router.get('/popular', [TraditionsController, 'popularTradition']) /*.use(middleware.checkPermission(['get-popular-tradition']))*/, 
         router.post('/validate/:id', [TraditionsController, 'validateTradition']).where('id', router.matchers.uuid()).use(middleware.checkPermission(['validate-tradition'])), 
         router.post('/reject/:id', [TraditionsController, 'rejectTradition']).where('id', router.matchers.uuid()).use(middleware.checkPermission(['reject-tradition'])), 
-        router.post('/archive/:id', [TraditionsController, 'archiveTradition']).where('id', router.matchers.uuid()).use(middleware.checkPermission(['archive-tradition']))
+        router.post('/archive/:id', [TraditionsController, 'archiveTradition']).where('id', router.matchers.uuid()).use(middleware.checkPermission(['archive-tradition'])),
+        router.post('/publish/:id', [TraditionsController, 'publishTradition']).where('id', router.matchers.uuid()).use(middleware.checkPermission(['publish-tradition']))
     }).prefix('/traditions').use(middleware.auth({guards: ['api']}))
     
 }

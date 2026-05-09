@@ -1,14 +1,18 @@
 /* eslint-disable prettier/prettier */
 
 import Tradition from "#models/tradition";
-import User from "#models/user";
-import Notification from "#models/notification";
-import admin from "#config/firebase";
+import { NotificationSenderService } from "./notification_sender_service.js";
 import { cuid } from "@adonisjs/core/helpers";
 import app from "@adonisjs/core/services/app";
 
 
 export class TraditionService {
+  private notificationSender: NotificationSenderService
+
+  constructor() {
+    this.notificationSender = new NotificationSenderService()
+  }
+
   async createTradition(data: any, userId: string) {
     const tradition = new Tradition()
     tradition.title = data.title
@@ -43,55 +47,15 @@ export class TraditionService {
     await tradition.save()
 
     // Envoi des notifications globales
-    this.sendGlobalNotification(tradition).catch(console.error)
+    this.notificationSender.sendToAllWithRole(
+      'Nouvelle tradition disponible',
+      `Une nouvelle tradition intitulée "${tradition.title}" a été ajoutée.`,
+      { traditionId: tradition.id }
+    ).catch(console.error)
 
     return tradition
   }
 
-  private async sendGlobalNotification(tradition: Tradition) {
-    const users = await User.query().preload('roles')
-    
-    if (users.length === 0) return
-
-    const fcmTokens: string[] = []
-    const dbNotifications: any[] = []
-
-    users.forEach((user) => {
-      if (user.sendNotif && user.roles.length > 0) {
-        if (user.fcmToken) {
-          fcmTokens.push(user.fcmToken)
-        }
-        dbNotifications.push({
-          userId: user.id,
-          title: 'Nouvelle tradition disponible',
-          description: `Une nouvelle tradition intitulée "${tradition.title}" a été ajoutée.`,
-          read: false,
-        })
-      }
-    })
-
-    // Création des notifications en base de données
-    if (dbNotifications.length > 0) {
-      await Notification.createMany(dbNotifications)
-    }
-
-    // Envoi des push via Firebase (par paquets de 500)
-    if (fcmTokens.length > 0) {
-      for (let i = 0; i < fcmTokens.length; i += 500) {
-        const batch = fcmTokens.slice(i, i + 500)
-        await admin.messaging().sendEachForMulticast({
-          tokens: batch,
-          notification: {
-            title: 'Nouvelle tradition disponible',
-            body: `Une nouvelle tradition intitulée "${tradition.title}" a été ajoutée.`,
-          },
-          data: {
-            traditionId: tradition.id,
-          }
-        })
-      }
-    }
-  }
 
   async updateTradition(traditionId: string, data: any) {
     const tradition = await Tradition.query().where('id', traditionId).firstOrFail()
@@ -201,6 +165,13 @@ export class TraditionService {
     if ((tradition.status === 'validate' )) throw new Error('Tradition déjà validée') 
     tradition.status = 'validate'
     await tradition.save()
+
+    this.notificationSender.sendToAllWithRole(
+      'Tradition validée',
+      `La tradition "${tradition.title}" a été validée.`,
+      { traditionId: tradition.id }
+    ).catch(console.error)
+
     return tradition
   }
 
@@ -211,6 +182,13 @@ export class TraditionService {
       throw new Error('Impossible de rejecter cette tradition')
     tradition.status = 'rejected'
     await tradition.save()
+
+    this.notificationSender.sendToAllWithRole(
+      'Tradition rejetée',
+      `La tradition "${tradition.title}" a été rejetée.`,
+      { traditionId: tradition.id }
+    ).catch(console.error)
+
     return tradition
   }
 
@@ -220,6 +198,32 @@ export class TraditionService {
     if (tradition.status === 'archived') throw new Error("Impossible d'archiver cette tradition")
     tradition.status = 'archived'
     await tradition.save()
+
+    this.notificationSender.sendToAllWithRole(
+      'Tradition archivée',
+      `La tradition "${tradition.title}" a été archivée.`,
+      { traditionId: tradition.id }
+    ).catch(console.error)
+
+    return tradition
+  }
+
+  async publishTradition(traditionId: string) {
+    const tradition = await Tradition.query().where('id', traditionId).first()
+    if (!tradition) throw new Error('Tradition non trouvée')
+    // On suppose que "validate" et "publish" sont proches, mais on peut ajouter un statut "published" si nécessaire
+    // Pour l'instant on suit la demande de "publié"
+    tradition.status = 'published'
+    await tradition.save()
+
+    this.notificationSender.sendToAllDifferentiated({
+      titleWithRole: 'Tradition publiée',
+      bodyWithRole: `Une nouvelle tradition intitulée "${tradition.title}" a été publiée.`,
+      titleWithoutRole: 'Nouvelle tradition',
+      bodyWithoutRole: `Découvrez la tradition "${tradition.title}" qui vient d'être ajoutée !`,
+      data: { traditionId: tradition.id }
+    }).catch(console.error)
+
     return tradition
   }
 }
