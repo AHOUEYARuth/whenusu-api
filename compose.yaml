@@ -51,7 +51,8 @@ services:
       - 4444:8080
 
 volumes:
-  db-data:
+  - db-data:
+  - ./service-account.json:/app/config/firebase/service-account.json
 # secrets:
 #   db-password:
 #     file: db/password.txt
