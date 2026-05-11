@@ -16,6 +16,8 @@ services:
       - 3333:3333
     env_file:
       - .env
+    volumes:
+      - ./service-account.json:/app/config/firebase/service-account.json
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
@@ -51,8 +53,7 @@ services:
       - 4444:8080
 
 volumes:
-  - db-data:
-  - ./service-account.json:/app/config/firebase/service-account.json
+  db-data:
 # secrets:
 #   db-password:
 #     file: db/password.txt
