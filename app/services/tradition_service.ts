@@ -155,9 +155,9 @@ export class TraditionService {
       .preload('informant')
 
     if (filter.title) query.whereILike('title', `%${filter.title}%`)
-    if (filter.categoryId) query.where('id', filter.categoryId)
-    if (filter.regionId) query.where('id', filter.regionId)
-    if (filter.languageId) query.where('id', filter.languageId)
+    if (filter.categoryId) query.where('category_id', filter.categoryId)
+    if (filter.regionId) query.where('region_id', filter.regionId)
+    if (filter.languageId) query.where('language_id', filter.languageId)
 
     const post = await query
     return post
