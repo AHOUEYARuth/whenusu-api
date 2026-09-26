@@ -47,7 +47,7 @@ export default class RegionsController {
       const regions = await this.regionService.getAllRegion()
       return response.status(200).json({
         message: 'Liste de toutes les régions',
-        regions,
+        data: regions,
       })
     } catch (error) {
       return response.status(500).json({
@@ -70,7 +70,7 @@ export default class RegionsController {
       const region = await this.regionService.updateRegion(params.id, payload)
       return response.status(200).json({
         message: 'Région modifiée avec succès',
-        region,
+        data: region,
       })
     } catch (error) {
       return response.status(401).json({
@@ -90,7 +90,7 @@ export default class RegionsController {
       const language = await this.regionService.deleteRegion(params.id)
       return response.status(200).json({
         message: 'Région supprimée avec succès',
-        language,
+        data: language,
       })
     } catch (error) {
       return response.status(500).json({
@@ -120,7 +120,7 @@ export default class RegionsController {
     await region.assignLanguages(languageIds)
     return response.status(200).json({
       message: 'Langue ajoutée à région',
-      region,
+      data: region,
     })
   }
 
@@ -145,7 +145,7 @@ export default class RegionsController {
     await region.unassignLanguages(languageIds)
     return response.status(200).json({
       message: 'Langue détachée de région',
-      region,
+      data: region,
     })
   }
 }

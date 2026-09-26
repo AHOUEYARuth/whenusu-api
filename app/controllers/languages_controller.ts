@@ -49,7 +49,7 @@ export default class LanguagesController {
       const languages = await this.languageService.getAllLanguage()
       return response.status(200).json({
         message: 'Listes de toutes les langues',
-        languages,
+        data: languages,
       })
     } catch (error) {
       return response.status(500).json({

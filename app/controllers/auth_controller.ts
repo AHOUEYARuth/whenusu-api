@@ -92,7 +92,7 @@ export default class AuthController {
    *
    * @login
    * @summary Se connecter à son compte
-   * @requestFormDataBody {"email":{"type": "string"},"phoneNumber":{"type":"string", "required": "true"},"password":{"type":"string", "required": "true"}}
+   * @requestFormDataBody {"email":{"type": "string","required": "true"},"password":{"type":"string", "required": "true"}}
    * @responseBody 200 - <User>
    */
   public async login({ request, response }: HttpContext) {
@@ -361,7 +361,7 @@ export default class AuthController {
       const { users, statistics } = await this.authService.getUsers(page)
       return response.status(200).json({
         message: 'Liste des utilisateurs',
-        statistics,
+        meta: { statistics },
         data: users,
       })
     } catch (error: any) {
