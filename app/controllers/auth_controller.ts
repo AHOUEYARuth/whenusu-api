@@ -35,12 +35,11 @@ export default class AuthController {
         message: 'Utilisateur créé avec succès',
         data: user,
       })
-    } catch (error) {
-      console.log("Erreur lors de l'inscription :")
-      console.log(error)
-      return response.status(500).json({
-        message: error.messages || "Une erreur s'est produite lors de l'inscription",
-      })
+    } catch (error: any) {
+      if (error.messages) {
+        return response.status(422).json({ message: 'Erreur de validation', errors: error.messages })
+      }
+      return response.status(500).json({ message: error.message || 'Une erreur s\'est produite lors de l\'inscription' })
     }
   }
 
@@ -81,12 +80,11 @@ export default class AuthController {
         message: 'Administrateur créé avec succès',
         data: user,
       })
-    } catch (error) {
-      console.log("Erreur lors de l'inscription admin :")
-      console.log(error)
-      return response.status(500).json({
-        message: error.messages || "Une erreur s'est produite lors de l'inscription",
-      })
+    } catch (error: any) {
+      if (error.messages) {
+        return response.status(422).json({ message: 'Erreur de validation', errors: error.messages })
+      }
+      return response.status(500).json({ message: error.message || 'Une erreur s\'est produite lors de l\'inscription' })
     }
   }
 
@@ -132,12 +130,11 @@ export default class AuthController {
         userPersmisions,
         token: token.value!.release(),
       })
-    } catch (error) {
-      console.log("Erreur lors de l'inscription :")
-      console.log(error)
-      return response.status(500).json({
-        message: error.messages || "Une erreur s'est produite lors de la connexion",
-      })
+    } catch (error: any) {
+      if (error.messages) {
+        return response.status(422).json({ message: 'Erreur de validation', errors: error.messages })
+      }
+      return response.status(500).json({ message: error.message || 'Une erreur s\'est produite lors de la connexion' })
     }
   }
 
@@ -293,10 +290,9 @@ export default class AuthController {
       return response.status(200).json({
         message: 'compte supprimé avec succès',
       })
-    } catch (error) {
-      return response.status(200).json({
-        message: error.message || "Une erreur s'est produite",
-      })
+    } catch (error: any) {
+      const status = error.message && error.message.includes('non trouvé') ? 404 : 400
+      return response.status(status).json({ message: error.message || 'Une erreur s\'est produite' })
     }
   }
 
@@ -313,10 +309,9 @@ export default class AuthController {
       return response.status(200).json({
         message: 'Mot de passe changé avec succès',
       })
-    } catch (error) {
-      return response.status(500).json({
-        message: error.message || "Une erreur s'est produite",
-      })
+    } catch (error: any) {
+      const status = error.message && error.message.includes('non trouvé') ? 404 : 400
+      return response.status(status).json({ message: error.message || 'Une erreur s\'est produite' })
     }
   }
 
@@ -348,10 +343,9 @@ export default class AuthController {
         message: 'Profile modifié avec succès',
         data: user,
       })
-    } catch (error) {
-      return response.status(500).json({
-        message: error.message || "Une erreur s'est produite",
-      })
+    } catch (error: any) {
+      const status = error.message && error.message.includes('non trouvé') ? 404 : 400
+      return response.status(status).json({ message: error.message || 'Une erreur s\'est produite' })
     }
   }
 
@@ -370,10 +364,9 @@ export default class AuthController {
         statistics,
         data: users,
       })
-    } catch (error) {
-      return response.status(500).json({
-        message: error.message || "Une erreur s'est produite",
-      })
+    } catch (error: any) {
+      const status = error.message && error.message.includes('non trouvé') ? 404 : 400
+      return response.status(status).json({ message: error.message || 'Une erreur s\'est produite' })
     }
   }
 
@@ -388,10 +381,9 @@ export default class AuthController {
       return response.status(200).json({
         message: 'Etat de notification modifié',
       })
-    } catch (error) {
-      return response.status(500).json({
-        message: error.message || "Une erreur s'est produite",
-      })
+    } catch (error: any) {
+      const status = error.message && error.message.includes('non trouvé') ? 404 : 400
+      return response.status(status).json({ message: error.message || 'Une erreur s\'est produite' })
     }
   }
 
@@ -408,10 +400,9 @@ export default class AuthController {
         message: 'User details',
         data: user,
       })
-    } catch (error) {
-      return response.status(500).json({
-        message: error.message || "Une erreur s'est produite",
-      })
+    } catch (error: any) {
+      const status = error.message && error.message.includes('non trouvé') ? 404 : 400
+      return response.status(status).json({ message: error.message || 'Une erreur s\'est produite' })
     }
   }
 
@@ -430,10 +421,9 @@ export default class AuthController {
         message: 'Langue préférée mise à jour avec succès',
         data: user,
       })
-    } catch (error) {
-      return response.status(500).json({
-        message: error.message || "Une erreur s'est produite lors de la mise à jour de la langue",
-      })
+    } catch (error: any) {
+      const status = error.message && error.message.includes('non trouvé') ? 404 : 400
+      return response.status(status).json({ message: error.message || 'Une erreur s\'est produite lors de la mise à jour de la langue' })
     }
   }
 }
