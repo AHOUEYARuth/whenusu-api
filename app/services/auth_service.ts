@@ -41,29 +41,46 @@ export class AuthService {
   }
 
   async generateOtpCode() {
-    const otpCode = Math.floor(100000 + Math.random() * 900000)
-      .toString()
-      .slice(2)
+    const { randomInt } = await import('node:crypto')
+    const otpCode = randomInt(100000, 999999).toString()
     return otpCode
   }
 
   async verifyOtpCOde(data: { email?: string; phoneNumber?: string; otpCode: string }) {
+    const { randomUUID } = await import('node:crypto')
+    const { DateTime } = await import('luxon')
+
     const user = await User.query().where(
         data.email ? 'email' : 'phone_number',
         data.email ? data.email : (data.phoneNumber ?? '')
       )
       .andWhere('otp_code', data.otpCode)
       .first()
-    return user
+    
+    if (!user) return null
+
+    if (user.otpExpiresAt && user.otpExpiresAt < DateTime.now()) {
+      return null // Expired
+    }
+
+    const resetToken = randomUUID()
+    user.otpCode = null
+    user.otpExpiresAt = null
+    user.resetToken = resetToken
+    await user.save()
+
+    return { user, resetToken }
   }
 
   async verifyUser(data: { email?: string; phoneNumber?: string }) {
+    const { DateTime } = await import('luxon')
     const user = data.email
       ? await User.findBy('email', data.email)
       : await User.findBy('phone_number', data.phoneNumber)
     const otpCode = await this.generateOtpCode()
     if (user) {
       user!.otpCode = otpCode
+      user!.otpExpiresAt = DateTime.now().plus({ minutes: 10 })
       const subject = 'Mot de passe oublié - code OTP de validation'
       await this.mailSerice.sendMail({ userEmail:user.email || "",otpCode, subject: subject})
       await user!.save()
@@ -74,14 +91,14 @@ export class AuthService {
     
   }
 
-  async ressetPassword(email: string, otpCode: string, newPassword: string) {
-    const user = await User.query().where('email', email).andWhere('otp_code', otpCode).first()
+  async ressetPassword(email: string, resetToken: string, newPassword: string) {
+    const user = await User.query().where('email', email).andWhere('reset_token', resetToken).first()
     if (!user) {
-      console.log('no user or invalid otp')
+      console.log('no user or invalid token')
       return null
     }
     user.password = newPassword
-    user.otpCode = null
+    user.resetToken = null
     await user.save()
     return user
   }

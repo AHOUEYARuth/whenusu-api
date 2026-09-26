@@ -213,17 +213,17 @@ export default class AuthController {
    *
    * @forgotPassword
    * @summary Mot de passe oublié
-   * @requestFormDataBody {"email": {"type": "string", "required": "true"}, "otpCode": {"type": "string", "required": "true"}, "newPassword": {"type": "string", "required": "true"}, "confirmPassword": {"type":"string", "required": "true"}}
+   * @requestFormDataBody {"email": {"type": "string", "required": "true"}, "resetToken": {"type": "string", "required": "true"}, "newPassword": {"type": "string", "required": "true"}, "confirmPassword": {"type":"string", "required": "true"}}
    * @responseBody 200 - <User>
    */
   public async forgotPassword({ request, response }: HttpContext) {
-    const { email, otpCode, newPassword, confirmPassword } = await request.body()
+    const { email, resetToken, newPassword, confirmPassword } = await request.body()
     if (newPassword !== confirmPassword) {
       return response.status(400).json({
         message: 'Le mot de passe de confirmation ne correspond pas',
       })
     } else {
-      const user = await this.authService.ressetPassword(email, otpCode, newPassword)
+      const user = await this.authService.ressetPassword(email, resetToken, newPassword)
       if (!user) {
         return response.status(404).json({
           message: 'Utilisateur ou code OTP incorrect',
@@ -266,15 +266,16 @@ export default class AuthController {
    */
   public async verifyOtpCode({ request, response }: HttpContext) {
     const { email, phoneNumber, otpCode } = await request.body()
-    const user = await this.authService.verifyOtpCOde({ email, phoneNumber, otpCode })
-    if (!user) {
+    const result = await this.authService.verifyOtpCOde({ email, phoneNumber, otpCode })
+    if (!result) {
       return response.status(404).json({
-        message: 'Code OTP invalide',
+        message: 'Code OTP invalide ou expiré',
       })
     } else {
       return response.status(200).json({
         message: 'Code OTP vérifié avec succès',
-        user,
+        user: result.user,
+        resetToken: result.resetToken,
       })
     }
   }

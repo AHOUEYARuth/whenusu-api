@@ -2,6 +2,7 @@
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { belongsTo, column, computed, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import { DateTime } from 'luxon'
 import env from '#start/env'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
@@ -57,6 +58,12 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @column()
   declare otpCode: string | null
+
+  @column.dateTime()
+  declare otpExpiresAt: DateTime | null
+
+  @column()
+  declare resetToken: string | null
 
   @column()
   declare regionId: string

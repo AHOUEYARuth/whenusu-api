@@ -41,7 +41,8 @@ router.use([() => import('@adonisjs/core/bodyparser_middleware'), () => import('
  */
 export const middleware = router.named({
   checkPermission: () => import('#middleware/check_permission_middleware'),
-  auth: () => import('#middleware/auth_middleware')
+  auth: () => import('#middleware/auth_middleware'),
+  throttle: () => import('#middleware/throttle_middleware')
 })
 
  

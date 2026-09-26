@@ -17,9 +17,9 @@ export const AuthRoutes = () => {
         router.delete('/logout', [AuthController, 'logout']).use(middleware.auth({ guards: ['api'] })),
         router.post('/assign-role/:id', [AuthController, 'assignRoleToUser']).use([middleware.auth({ guards: ['api'] }) , middleware.checkPermission(['assign-role-to-user'])]),
         router.post('/unassign-role/:id', [AuthController, 'unassignRoleToUser']).use([middleware.auth({ guards: ['api'] }), middleware.checkPermission(['unassign-role-to-user'])]),
-        router.post('/verify-user', [AuthController, 'verifyUser']),
-        router.post('/verify-otp-code', [AuthController, 'verifyOtpCode']),
-        router.post('/forgot-password', [AuthController, 'forgotPassword'])
+        router.post('/verify-user', [AuthController, 'verifyUser']).use(middleware.throttle()),
+        router.post('/verify-otp-code', [AuthController, 'verifyOtpCode']).use(middleware.throttle()),
+        router.post('/forgot-password', [AuthController, 'forgotPassword']).use(middleware.throttle())
         router.post('/delete-account', [AuthController, 'deleteUserAccount']).use(middleware.auth({ guards: ['api'] })),
         router.post('/update-password', [AuthController, 'updatePassword']).use(middleware.auth({ guards: ['api'] })),
         router.get('/user', [AuthController, 'userDetails']).use(middleware.auth({ guards: ['api'] })),
