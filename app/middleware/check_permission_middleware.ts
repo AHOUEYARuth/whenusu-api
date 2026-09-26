@@ -18,8 +18,10 @@ export default class CheckPermissionMiddleware {
     }
 
     const userPermissions = await user.getPermissions()
+    const requiredPermissions = Array.isArray(permissions) ? permissions : [permissions]
+
     const hasPermission = userPermissions.some((permissionSlug) =>
-      permissions.includes(permissionSlug)
+      requiredPermissions.includes(permissionSlug)
     )
 
     if (!hasPermission) {
