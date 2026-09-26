@@ -16,6 +16,24 @@ export const RegisterValidator = vine.compile(
       .optional(),
     region_id: vine.string().optional()
   })
+)
+
+export const RegisterAdminValidator = vine.compile(
+  vine.object({
+    last_name: vine.string().trim().minLength(3),
+    first_name: vine.string().trim().minLength(3),
+    email: vine.string().email().unique({ table: 'users', column: 'email' }).optional(),
+    phone_number: vine.string().unique({ table: 'users', column: 'phone_number' }).minLength(8),
+    password: vine.string().minLength(6),
+    avatar_url: vine
+      .file({
+        extnames: ['jpg', 'jpeg', 'png', 'webp'],
+        size: '10mb',
+      })
+      .optional(),
+    region_id: vine.string().optional(),
+    role_id: vine.string()
+  })
 ) 
 
 export const LoginValidator = vine.compile(

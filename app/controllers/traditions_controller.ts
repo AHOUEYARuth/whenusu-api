@@ -80,16 +80,19 @@ export default class TraditionsController {
       const categoryId = request.input('category_id')
       const regionId = request.input('region_id')
       const languageId = request.input('language_id')
-      const page = request.input('page')
-      if (title || categoryId || regionId || languageId) {
-        const filter = { title, categoryId, regionId, languageId }
+      const page = request.input('page', 1)
+      const status = request.input('status', 'pending')
+      const isHighlighted = request.input('is_highlighted')
+
+      if (title || categoryId || regionId || languageId || isHighlighted !== undefined) {
+        const filter = { title, categoryId, regionId, languageId, status, isHighlighted }
         const tradition = await this.traditionService.traditionFilter(filter)
         return response.status(200).json({
           message: 'Tradition recherchée',
           data: tradition,
         })
       } else {
-        const traditions = await this.traditionService.getTraditions(page)
+        const traditions = await this.traditionService.getTraditions(page, status, isHighlighted)
         return response.status(200).json({
           message: 'Liste des traditions',
           data: traditions,
@@ -98,6 +101,65 @@ export default class TraditionsController {
     } catch (error) {
       return response.status(500).json({
         message: "Une erreur s'est produite",
+      })
+    }
+  }
+
+  /**
+   *
+   * @publishedIndex
+   * @summary Liste des traditions publiées (pour les utilisateurs)
+   * @responseBody 200 - <Tradition[]>
+   */
+  public async publishedIndex({ request, response }: HttpContext) {
+    try {
+      const title = request.input('title')
+      const categoryId = request.input('category_id')
+      const regionId = request.input('region_id')
+      const languageId = request.input('language_id')
+      const page = request.input('page', 1)
+      const status = 'published' // Fixe le statut à "publié"
+      const isHighlighted = request.input('is_highlighted')
+
+      if (title || categoryId || regionId || languageId || isHighlighted !== undefined) {
+        const filter = { title, categoryId, regionId, languageId, status, isHighlighted }
+        const tradition = await this.traditionService.traditionFilter(filter)
+        return response.status(200).json({
+          message: 'Tradition recherchée',
+          data: tradition,
+        })
+      } else {
+        const traditions = await this.traditionService.getTraditions(page, status, isHighlighted)
+        return response.status(200).json({
+          message: 'Liste des traditions publiées',
+          data: traditions,
+        })
+      }
+    } catch (error) {
+      return response.status(500).json({
+        message: "Une erreur s'est produite",
+      })
+    }
+  }
+
+  /**
+   *
+   * @setHighlight
+   * @summary Mettre à la une (ou retirer de la une) une tradition
+   * @paramPath id - Identifiant de la tradition - @type(string) @required
+   * @requestFormDataBody {"is_highlighted":{"type":"boolean", "required": "true"}}
+   */
+  public async setHighlight({ request, response, params }: HttpContext) {
+    try {
+      const isHighlighted = request.input('is_highlighted') === true || request.input('is_highlighted') === 'true'
+      const tradition = await this.traditionService.setHighlight(params.id, isHighlighted)
+      return response.status(200).json({
+        message: 'Statut de mise à la une modifié avec succès',
+        data: tradition
+      })
+    } catch (error) {
+      return response.status(500).json({
+        message: error.message || "Une erreur s'est produite",
       })
     }
   }

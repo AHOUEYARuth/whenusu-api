@@ -78,6 +78,9 @@ export default class Tradition extends BaseModel {
   declare status: string
 
   @column()
+  declare isHighlighted: boolean
+
+  @column()
   declare favorisCount: number
 
   @belongsTo(() => User)

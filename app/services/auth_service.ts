@@ -74,10 +74,10 @@ export class AuthService {
     
   }
 
-  async ressetPassword(email: string, newPassword: string) {
-    const user = await User.findBy('email', email)
+  async ressetPassword(email: string, otpCode: string, newPassword: string) {
+    const user = await User.query().where('email', email).andWhere('otp_code', otpCode).first()
     if (!user) {
-      console.log('no user')
+      console.log('no user or invalid otp')
       return null
     }
     user.password = newPassword

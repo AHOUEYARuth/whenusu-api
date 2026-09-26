@@ -3,6 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 import { GoogleAuthService } from '#services/google_auth_service'
 import User from '#models/user'
+import crypto from 'node:crypto'
 
 export default class GoogleAuthsController {
   private googleAuthService: GoogleAuthService
@@ -42,6 +43,7 @@ export default class GoogleAuthsController {
         firstName: payload.given_name ?? '',
         lastName: payload.family_name ?? '',
         avatarUrl: payload.picture ?? null,
+        password: crypto.randomBytes(16).toString('hex'),
         provider: 'google',
         googleId: payload.sub,
       })

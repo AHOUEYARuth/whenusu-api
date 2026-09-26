@@ -95,8 +95,12 @@ export class TraditionService {
     return tradition
   }
 
-  async getTraditions(page: number = 1) {
-    const traditions = await Tradition.query()
+  async getTraditions(page: number = 1, status: string = 'pending', isHighlighted?: boolean) {
+    let query = Tradition.query().where('status', status)
+    if (isHighlighted !== undefined) {
+      query = query.where('is_highlighted', isHighlighted)
+    }
+    const traditions = await query
       .preload('user')
       .preload('category')
       .preload('region')
@@ -134,9 +138,17 @@ export class TraditionService {
     categoryId?: string
     regionId?: string
     languageId?: string
+    status?: string
+    isHighlighted?: boolean
   }) {
     let query = Tradition.query()
-      .preload('user')
+      .where('status', filter.status || 'pending')
+
+    if (filter.isHighlighted !== undefined) {
+      query.where('is_highlighted', filter.isHighlighted)
+    }
+
+    query.preload('user')
       .preload('category')
       .preload('region')
       .preload('language')
@@ -165,7 +177,7 @@ export class TraditionService {
   async validateTradition(traditionId: string, userId: string) {
     const tradition = await Tradition.query().where('id', traditionId).first()
     if (!tradition) throw new Error('Tradition non trouvée')
-    if ((tradition.status === 'validate' )) throw new Error('Tradition déjà validée') 
+    if (tradition.status === 'validate' || tradition.status === 'published') throw new Error('Tradition déjà validée ou publiée') 
     tradition.status = 'validate'
     tradition.validatedBy = userId
     await tradition.save()
@@ -182,7 +194,7 @@ export class TraditionService {
   async rejectTradition(traditionId: string, userId: string) {
     const tradition = await Tradition.query().where('id', traditionId).first()
     if (!tradition) throw new Error('Tradition non trouvée')
-    if (tradition.status === 'rejected' || tradition.status === 'validate')
+    if (tradition.status === 'rejected' || tradition.status === 'published')
       throw new Error('Impossible de rejecter cette tradition')
     tradition.status = 'rejected'
     tradition.rejectedBy = userId
@@ -217,8 +229,8 @@ export class TraditionService {
   async publishTradition(traditionId: string, userId: string) {
     const tradition = await Tradition.query().where('id', traditionId).first()
     if (!tradition) throw new Error('Tradition non trouvée')
-    // On suppose que "validate" et "publish" sont proches, mais on peut ajouter un statut "published" si nécessaire
-    // Pour l'instant on suit la demande de "publié"
+    if (tradition.status !== 'validate') throw new Error('La tradition doit être validée avant publication')
+    
     tradition.status = 'published'
     tradition.publishedBy = userId
     await tradition.save()
@@ -230,6 +242,16 @@ export class TraditionService {
       bodyWithoutRole: `Découvrez la tradition "${tradition.title}" qui vient d'être ajoutée !`,
       data: { traditionId: tradition.id }
     }).catch(console.error)
+
+    return tradition
+  }
+
+  async setHighlight(traditionId: string, isHighlighted: boolean) {
+    const tradition = await Tradition.query().where('id', traditionId).first()
+    if (!tradition) throw new Error('Tradition non trouvée')
+    
+    tradition.isHighlighted = isHighlighted
+    await tradition.save()
 
     return tradition
   }

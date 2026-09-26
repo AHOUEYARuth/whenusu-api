@@ -11,6 +11,7 @@ export const AuthRoutes = () => {
          * @summary créer un utilisateur
          */
         router.post('/register', [AuthController, 'register']),
+        router.post('/register-admin', [AuthController, 'registerAdmin']).use(middleware.auth({ guards: ['api'] })),
         router.post('/login', [AuthController, 'login']),
         router.post('/google', [GoogleAuthsController, 'loginWithGoogle']),
         router.delete('/logout', [AuthController, 'logout']).use(middleware.auth({ guards: ['api'] })),

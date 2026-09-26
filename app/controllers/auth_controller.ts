@@ -2,7 +2,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
 import { AuthService } from '#services/auth_service'
-import { LoginValidator, messageProviderAuth, RegisterValidator, updateUserValidator, UpdateLanguageValidator } from '#validators/auth'
+import { LoginValidator, messageProviderAuth, RegisterValidator, RegisterAdminValidator, updateUserValidator, UpdateLanguageValidator } from '#validators/auth'
 import User from '#models/user'
 import hash from '@adonisjs/core/services/hash'
 import Role from '#models/role'
@@ -29,18 +29,7 @@ export default class AuthController {
         messagesProvider: new SimpleMessagesProvider(messageProviderAuth),
       })
       /*  const file = request.file('avatar_url') */
-      const roleId = request.input('role_id')
       const user = await this.authService.createUser(payload)
-
-      if (roleId) {
-        const role = await Role.query().where('id', roleId).firstOrFail()
-        if (!role) {
-          return response.status(404).json({
-            message: 'Rôle non trouvé',
-          })
-        }
-        await user.assignRoles([role.id])
-      }
 
       return response.status(201).json({
         message: 'Utilisateur créé avec succès',
@@ -48,6 +37,52 @@ export default class AuthController {
       })
     } catch (error) {
       console.log("Erreur lors de l'inscription :")
+      console.log(error)
+      return response.status(500).json({
+        message: error.messages || "Une erreur s'est produite lors de l'inscription",
+      })
+    }
+  }
+
+  /**
+   *
+   * @registerAdmin
+   * @summary Création d'administrateur
+   * @requestFormDataBody {"last_name":{"type":"string", "required": "true"},"first_name":{"type":"string", "required": "true"},"email":{"type":"string"},"phone_number":{"type":"string", "required": "true"},"password":{"type":"string", "required": "true"},"region_id":{"type":"string"},"avatar_url":{"type":"string","format":"binary"}, "role_id":{"type": "string", "required": "true"}}
+   * @responseBody 201 - <User>
+   *
+   */
+  public async registerAdmin({ request, response, auth }: HttpContext) {
+    try {
+      await auth.user!.load('roles')
+      const userRoles = auth.user!.roles.map(r => r.slug)
+      
+      if (!userRoles.includes('super-admin') && !userRoles.includes('admin')) {
+        return response.status(403).json({
+          message: 'Action non autorisée. Seuls les administrateurs peuvent utiliser cette route.',
+        })
+      }
+
+      const payload = await request.validateUsing(RegisterAdminValidator, {
+        messagesProvider: new SimpleMessagesProvider(messageProviderAuth),
+      })
+      
+      const role = await Role.query().where('id', payload.role_id).first()
+      if (!role) {
+        return response.status(404).json({
+          message: 'Rôle non trouvé',
+        })
+      }
+
+      const user = await this.authService.createUser(payload)
+      await user.assignRoles([role.id])
+
+      return response.status(201).json({
+        message: 'Administrateur créé avec succès',
+        data: user,
+      })
+    } catch (error) {
+      console.log("Erreur lors de l'inscription admin :")
       console.log(error)
       return response.status(500).json({
         message: error.messages || "Une erreur s'est produite lors de l'inscription",
@@ -178,22 +213,20 @@ export default class AuthController {
    *
    * @forgotPassword
    * @summary Mot de passe oublié
-   * @requestFormDataBody {"email": {"type": "string", "required": "true"}, "newPassword": {"type": "string", "required": "true"}, "confirmPassword": {"type":"string", "required": "true"}}
+   * @requestFormDataBody {"email": {"type": "string", "required": "true"}, "otpCode": {"type": "string", "required": "true"}, "newPassword": {"type": "string", "required": "true"}, "confirmPassword": {"type":"string", "required": "true"}}
    * @responseBody 200 - <User>
    */
   public async forgotPassword({ request, response }: HttpContext) {
-    const { email, newPassword, confirmPassword } = await request.body()
+    const { email, otpCode, newPassword, confirmPassword } = await request.body()
     if (newPassword !== confirmPassword) {
       return response.status(400).json({
         message: 'Le mot de passe de confirmation ne correspond pas',
       })
     } else {
-      const user = await this.authService.ressetPassword(email, newPassword)
-      console.log('user controller')
-      console.log(user)
+      const user = await this.authService.ressetPassword(email, otpCode, newPassword)
       if (!user) {
         return response.status(404).json({
-          message: 'Utilisateur non trouvé',
+          message: 'Utilisateur ou code OTP incorrect',
         })
       } else {
         return response.status(200).json({
